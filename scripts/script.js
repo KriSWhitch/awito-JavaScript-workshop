@@ -1,15 +1,16 @@
 'use sctrict';
 
+const dataBase = [];
+
 const modalAdd = document.querySelector('.modal__add');
 const addAd = document.querySelector('.add__ad');
 const modalBtnSubmit = document.querySelector('.modal__btn-submit');
 const modalSubmit = document.querySelector('.modal__submit');
 const catalog = document.querySelector('.catalog');
 const modalItem = document.querySelector('.modal__item'); 
+const modalBtnWarning = document.querySelector('.modal__btn-warning');
 
 const elementsModalSubmit = [...modalSubmit.elements].filter(elem => elem.tagName !== 'BUTTON' && elem.type !== 'submit');
-
-console.log(elementsModalSubmit);
 
 //Функции закрытия модального окна
 
@@ -44,12 +45,31 @@ const closeModalEscape = event => {
 };
 
 
-//Событие для кнопки
+//События для кнопки
+
+//Отвечает за блокировку отправления формы и за отображение предупреждающей надписи
 
 modalSubmit.addEventListener('input', () => {
     const validForm = elementsModalSubmit.every(elem => elem.value);
+    modalBtnSubmit.disabled = !validForm;
+    modalBtnWarning.style.display = validForm ? 'none' : '';
 });
 
+
+modalSubmit.addEventListener('submit', event => {
+    //Отключает стандартное поведение браузера - не перезагружает страницу после отправки формы
+    event.preventDefault();
+
+    const itemObj = {};
+
+    for (const elem of elementsModalSubmit) {
+        itemObj[elem.name] = elem.value;
+    }
+
+    dataBase.push(itemObj);
+    modalSubmit.reset();
+    
+});
 
 //Модальное окно при нажатии на кнопку подачи объявления
 
