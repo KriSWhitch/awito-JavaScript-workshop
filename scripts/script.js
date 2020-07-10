@@ -12,48 +12,38 @@ const modalBtnWarning = document.querySelector('.modal__btn-warning');
 
 const elementsModalSubmit = [...modalSubmit.elements].filter(elem => elem.tagName !== 'BUTTON' && elem.type !== 'submit');
 
-//Функции закрытия модального окна
+//Функции 
 
-const closeModal = function(event) {
+//Отвечает за блокировку отправления формы и за отображение предупреждающей надписи
+
+const checkForm = () => {
+    const validForm = elementsModalSubmit.every(elem => elem.value);
+    modalBtnSubmit.disabled = !validForm;
+    modalBtnWarning.style.display = validForm ? 'none' : '';
+}
+
+//Функция закрытия модального окна
+
+const closeModal = event => {
     const target = event.target;
 
-    if ( target.closest('.modal__close') || target === this ) {
-        this.classList.add('hide');
-        if (this === modalAdd) {
-            modalSubmit.reset();
-        }
-    }
-};
-
-// Использование стрелочной функции
-// const closeModal = event => {
-//     const target = event.target;
-
-//     if ( target.closest('.modal__close') || target === modalAdd || target === modalItem ) {
-//         modalAdd.classList.add('hide');
-//         modalItem.classList.add('hide');
-//         modalSubmit.reset();
-//     }
-// };
-
-const closeModalEscape = event => {
-    if (event.code === 'Escape') {
+    if (target.closest('.modal__close') || target.classList.contains('modal') || event.code === 'Escape') {
         modalAdd.classList.add('hide');
         modalItem.classList.add('hide');
-        document.removeEventListener('keydown', closeModalEscape);
-    }
+        document.removeEventListener('keydown', closeModal);
+        modalSubmit.reset();
+        checkForm();
+    } 
 };
+
+
 
 
 //События для кнопки
 
-//Отвечает за блокировку отправления формы и за отображение предупреждающей надписи
 
-modalSubmit.addEventListener('input', () => {
-    const validForm = elementsModalSubmit.every(elem => elem.value);
-    modalBtnSubmit.disabled = !validForm;
-    modalBtnWarning.style.display = validForm ? 'none' : '';
-});
+
+modalSubmit.addEventListener('input', checkForm);
 
 
 modalSubmit.addEventListener('submit', event => {
@@ -68,7 +58,7 @@ modalSubmit.addEventListener('submit', event => {
 
     dataBase.push(itemObj);
     modalSubmit.reset();
-    
+    closeModal({target: modalAdd});
 });
 
 //Модальное окно при нажатии на кнопку подачи объявления
@@ -76,7 +66,7 @@ modalSubmit.addEventListener('submit', event => {
 addAd.addEventListener('click', () => {
     modalAdd.classList.remove('hide');
     modalBtnSubmit.disabled = true;
-    document.addEventListener('keydown', closeModalEscape);
+    document.addEventListener('keydown', closeModal);
 })
 
 modalAdd.addEventListener('click', closeModal);
@@ -89,7 +79,7 @@ catalog.addEventListener('click', event => {
 
     if ( target.closest('.card') ) {
         modalItem.classList.remove('hide');
-        document.addEventListener('keydown', closeModalEscape);
+        document.addEventListener('keydown', closeModal);
     }
 });
 
